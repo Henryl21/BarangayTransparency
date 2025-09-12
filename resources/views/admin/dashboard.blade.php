@@ -4,21 +4,57 @@
 <div class="p-6 bg-gray-50 min-h-screen">
     <!-- Header Section -->
     <div class="mb-8">
-        <div class="flex items-center mb-6">
-            <div class="bg-gradient-to-r from-purple-500 to-blue-500 p-3 rounded-xl shadow-lg">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                </svg>
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center">
+                <div class="bg-gradient-to-r from-purple-500 to-blue-500 p-3 rounded-xl shadow-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <h1 class="text-3xl font-bold text-gray-800">Barangay eBudget Transparency</h1>
+                    <p class="text-gray-600 mt-1">Welcome, {{ auth('admin')->user()->name }}!</p>
+                </div>
             </div>
-            <div class="ml-4">
-                <h1 class="text-3xl font-bold text-gray-800">Barangay eBudget Transparency</h1>
-                <p class="text-gray-600 mt-1">Welcome, {{ auth('admin')->user()->name }}!</p>
+            
+            <!-- Dashboard Search Bar -->
+            <div class="relative max-w-md w-full">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="dashboardSearch"
+                        placeholder="Search dashboard sections..." 
+                        class="w-full pl-10 pr-10 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 bg-white shadow-sm"
+                        autocomplete="off"
+                    >
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <button 
+                        type="button" 
+                        id="clearDashboardSearch"
+                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-red-500 transition-colors hidden"
+                    >
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Search Results Dropdown -->
+                <div id="searchResults" class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-xl shadow-lg mt-2 z-50 hidden max-h-64 overflow-y-auto">
+                    <div class="p-2">
+                        <div class="text-sm text-gray-500 px-3 py-2">Start typing to search dashboard sections...</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Budget Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div id="budget-summary" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" data-search-terms="budget summary total spent remaining overview financial">
         <!-- Total Budget Card -->
         <div class="bg-white rounded-2xl shadow-xl p-6 border-l-4 border-blue-500 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
             <div class="flex items-center justify-between">
@@ -73,7 +109,7 @@
 
     <!-- Active Filters Display -->
     @if(request('month') || request('year') || request('category'))
-    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-lg">
+    <div id="active-filters" class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6 rounded-lg" data-search-terms="filters active month year category">
         <div class="flex items-center">
             <svg class="w-5 h-5 text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z"></path>
@@ -109,7 +145,7 @@
     <!-- Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <!-- Budget Overview Chart -->
-        <div class="bg-white rounded-2xl shadow-xl p-6">
+        <div id="budget-overview-chart" class="bg-white rounded-2xl shadow-xl p-6" data-search-terms="budget overview chart pie doughnut spending">
             <div class="flex items-center mb-6">
                 <div class="bg-blue-100 p-2 rounded-lg">
                     <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,7 +172,7 @@
         </div>
 
         <!-- Category Spending Chart -->
-        <div class="bg-white rounded-2xl shadow-xl p-6">
+        <div id="spending-by-category" class="bg-white rounded-2xl shadow-xl p-6" data-search-terms="spending category chart bar graph categories">
             <div class="flex items-center mb-6">
                 <div class="bg-green-100 p-2 rounded-lg">
                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,7 +188,7 @@
     </div>
 
     <!-- Announcements Section -->
-    <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+    <div id="announcements-section" class="bg-white rounded-2xl shadow-xl p-6 mb-8" data-search-terms="announcements news updates posts notifications">
         <div class="flex items-center mb-6">
             <div class="bg-gradient-to-r from-purple-100 to-pink-100 p-3 rounded-xl">
                 <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,37 +215,33 @@
                 <table class="w-full">
                     <thead class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
                         <tr>
-                           
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Title</th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Content</th>
                             <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Date Posted</th>
-                           
+                        </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @foreach ($announcements as $index => $announcement)
-                           
-                                <td class="px-6 py-4">
-                                    <div class="text-sm font-semibold text-gray-900 leading-5">{{ $announcement->title }}</div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div class="text-sm text-gray-700 max-w-xs">
-                                        <div class="line-clamp-3">{!! nl2br(e(Str::limit($announcement->content, 100))) !!}</div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h6l1 1v9a2 2 0 01-2 2H9a2 2 0 01-2-2V8l1-1z"></path>
-                                        </svg>
-                                        <span class="text-sm text-gray-600 font-medium">
-                                            {{ $announcement->published_at ? $announcement->published_at->format('F j, Y') : $announcement->created_at->format('F j, Y') }}
-                                        </span>
-                                    </div>
-                                </td>
-
-                                    </div>
-                                </td>
-                            </tr>
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-semibold text-gray-900 leading-5">{{ $announcement->title }}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-700 max-w-xs">
+                                    <div class="line-clamp-3">{!! nl2br(e(Str::limit($announcement->content, 100))) !!}</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h6l1 1v9a2 2 0 01-2 2H9a2 2 0 01-2-2V8l1-1z"></path>
+                                    </svg>
+                                    <span class="text-sm text-gray-600 font-medium">
+                                        {{ $announcement->published_at ? $announcement->published_at->format('F j, Y') : $announcement->created_at->format('F j, Y') }}
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -377,6 +409,301 @@
 
         // Make function globally available for potential external calls
         window.updateBudgetCharts = updateBudgetCharts;
+
+        // Dashboard Search Functionality
+        class DashboardSearch {
+            constructor() {
+                this.searchInput = document.getElementById('dashboardSearch');
+                this.searchResults = document.getElementById('searchResults');
+                this.clearButton = document.getElementById('clearDashboardSearch');
+                this.currentHighlight = null;
+                
+                // Define searchable sections
+                this.sections = [
+                    {
+                        id: 'budget-summary',
+                        title: 'Budget Summary',
+                        description: 'Total budget, spent amount, and remaining budget cards',
+                        icon: '💰',
+                        keywords: ['budget', 'summary', 'total', 'spent', 'remaining', 'financial', 'overview', 'money']
+                    },
+                    {
+                        id: 'budget-overview-chart',
+                        title: 'Budget Overview Chart',
+                        description: 'Pie chart showing budget allocation and spending',
+                        icon: '📊',
+                        keywords: ['budget', 'overview', 'chart', 'pie', 'doughnut', 'spending', 'allocation', 'visual']
+                    },
+                    {
+                        id: 'spending-by-category',
+                        title: 'Spending by Category',
+                        description: 'Bar chart displaying spending across different categories',
+                        icon: '📈',
+                        keywords: ['spending', 'category', 'categories', 'bar', 'chart', 'graph', 'breakdown']
+                    },
+                    {
+                        id: 'announcements-section',
+                        title: 'Announcements',
+                        description: 'Latest announcements and updates',
+                        icon: '📢',
+                        keywords: ['announcements', 'news', 'updates', 'posts', 'notifications', 'messages']
+                    },
+                    {
+                        id: 'active-filters',
+                        title: 'Active Filters',
+                        description: 'Currently applied filters for data viewing',
+                        icon: '🔍',
+                        keywords: ['filters', 'active', 'month', 'year', 'category', 'search']
+                    }
+                ];
+                
+                this.initializeEventListeners();
+            }
+
+            initializeEventListeners() {
+                // Search input events
+                this.searchInput.addEventListener('input', (e) => {
+                    this.handleSearch(e.target.value);
+                });
+
+                this.searchInput.addEventListener('focus', () => {
+                    if (this.searchInput.value.trim()) {
+                        this.showResults();
+                    }
+                });
+
+                this.searchInput.addEventListener('blur', (e) => {
+                    // Delay hiding to allow for clicks on results
+                    setTimeout(() => {
+                        this.hideResults();
+                    }, 200);
+                });
+
+                // Clear button
+                this.clearButton.addEventListener('click', () => {
+                    this.clearSearch();
+                });
+
+                // Keyboard navigation
+                this.searchInput.addEventListener('keydown', (e) => {
+                    this.handleKeyNavigation(e);
+                });
+
+                // Click outside to close
+                document.addEventListener('click', (e) => {
+                    if (!this.searchInput.contains(e.target) && !this.searchResults.contains(e.target)) {
+                        this.hideResults();
+                    }
+                });
+            }
+
+            handleSearch(query) {
+                const trimmedQuery = query.trim().toLowerCase();
+                
+                if (trimmedQuery.length === 0) {
+                    this.hideResults();
+                    this.clearButton.classList.add('hidden');
+                    this.clearHighlight();
+                    return;
+                }
+
+                this.clearButton.classList.remove('hidden');
+                const results = this.searchSections(trimmedQuery);
+                this.displayResults(results, trimmedQuery);
+            }
+
+            searchSections(query) {
+                return this.sections.filter(section => {
+                    const titleMatch = section.title.toLowerCase().includes(query);
+                    const descriptionMatch = section.description.toLowerCase().includes(query);
+                    const keywordMatch = section.keywords.some(keyword => keyword.includes(query));
+                    
+                    return titleMatch || descriptionMatch || keywordMatch;
+                }).sort((a, b) => {
+                    // Prioritize title matches
+                    const aScore = a.title.toLowerCase().includes(query) ? 2 : 1;
+                    const bScore = b.title.toLowerCase().includes(query) ? 2 : 1;
+                    return bScore - aScore;
+                });
+            }
+
+            displayResults(results, query) {
+                if (results.length === 0) {
+                    this.searchResults.innerHTML = `
+                        <div class="p-4">
+                            <div class="flex items-center text-gray-500">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.5.904-6.13 2.38"></path>
+                                </svg>
+                                <span class="text-sm">No sections found for "${query}"</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    this.searchResults.innerHTML = results.map((section, index) => `
+                        <div class="search-result-item p-3 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0" 
+                             data-section-id="${section.id}" 
+                             data-index="${index}">
+                            <div class="flex items-center">
+                                <span class="text-lg mr-3">${section.icon}</span>
+                                <div class="flex-1">
+                                    <div class="font-medium text-gray-900 text-sm">${this.highlightMatch(section.title, query)}</div>
+                                    <div class="text-xs text-gray-500 mt-1">${this.highlightMatch(section.description, query)}</div>
+                                </div>
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    // Add click events to results
+                    this.searchResults.querySelectorAll('.search-result-item').forEach(item => {
+                        item.addEventListener('click', (e) => {
+                            const sectionId = e.currentTarget.getAttribute('data-section-id');
+                            this.navigateToSection(sectionId);
+                        });
+                    });
+                }
+                
+                this.showResults();
+            }
+
+            highlightMatch(text, query) {
+                const regex = new RegExp(`(${query})`, 'gi');
+                return text.replace(regex, '<mark class="bg-yellow-200 px-1 rounded">$1</mark>');
+            }
+
+            navigateToSection(sectionId) {
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    // Clear any existing highlights
+                    this.clearHighlight();
+                    
+                    // Add highlight to the target section
+                    section.classList.add('search-highlight');
+                    this.currentHighlight = section;
+                    
+                    // Smooth scroll to section
+                    section.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                    
+                    // Hide search results
+                    this.hideResults();
+                    
+                    // Remove highlight after 3 seconds
+                    setTimeout(() => {
+                        this.clearHighlight();
+                    }, 3000);
+                    
+                    // Show success message
+                    this.showNavigationSuccess(sectionId);
+                }
+            }
+
+            showNavigationSuccess(sectionId) {
+                const section = this.sections.find(s => s.id === sectionId);
+                if (section) {
+                    // Create temporary success message
+                    const message = document.createElement('div');
+                    message.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-all duration-300';
+                    message.innerHTML = `
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            Navigated to ${section.title}
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(message);
+                    
+                    // Remove message after 2 seconds
+                    setTimeout(() => {
+                        message.style.opacity = '0';
+                        setTimeout(() => {
+                            document.body.removeChild(message);
+                        }, 300);
+                    }, 2000);
+                }
+            }
+
+            clearHighlight() {
+                if (this.currentHighlight) {
+                    this.currentHighlight.classList.remove('search-highlight');
+                    this.currentHighlight = null;
+                }
+            }
+
+            clearSearch() {
+                this.searchInput.value = '';
+                this.hideResults();
+                this.clearButton.classList.add('hidden');
+                this.clearHighlight();
+                this.searchInput.focus();
+            }
+
+            showResults() {
+                this.searchResults.classList.remove('hidden');
+            }
+
+            hideResults() {
+                this.searchResults.classList.add('hidden');
+            }
+
+            handleKeyNavigation(e) {
+                const items = this.searchResults.querySelectorAll('.search-result-item');
+                if (items.length === 0) return;
+
+                let currentIndex = -1;
+                items.forEach((item, index) => {
+                    if (item.classList.contains('bg-blue-50')) {
+                        currentIndex = index;
+                    }
+                });
+
+                switch (e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        currentIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+                        this.highlightResult(items, currentIndex);
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        currentIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+                        this.highlightResult(items, currentIndex);
+                        break;
+                    case 'Enter':
+                        e.preventDefault();
+                        if (currentIndex >= 0 && items[currentIndex]) {
+                            const sectionId = items[currentIndex].getAttribute('data-section-id');
+                            this.navigateToSection(sectionId);
+                        }
+                        break;
+                    case 'Escape':
+                        this.hideResults();
+                        this.searchInput.blur();
+                        break;
+                }
+            }
+
+            highlightResult(items, index) {
+                items.forEach((item, i) => {
+                    if (i === index) {
+                        item.classList.add('bg-blue-50');
+                    } else {
+                        item.classList.remove('bg-blue-50');
+                    }
+                });
+            }
+        }
+
+        // Initialize dashboard search
+        document.addEventListener('DOMContentLoaded', () => {
+            new DashboardSearch();
+        });
     </script>
 
     <!-- SweetAlert2 -->
@@ -411,6 +738,63 @@
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
         overflow: hidden;
+    }
+    
+    mark {
+        background-color: #fef08a;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-weight: 600;
+    }
+    
+    /* Search highlight animation */
+    .search-highlight {
+        animation: highlightPulse 2s ease-in-out;
+        border: 2px solid #3b82f6 !important;
+        border-radius: 16px !important;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3) !important;
+    }
+    
+    @keyframes highlightPulse {
+        0%, 100% { 
+            transform: scale(1); 
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        50% { 
+            transform: scale(1.02); 
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+        }
+    }
+    
+    /* Search results styling */
+    #searchResults {
+        max-height: 300px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e1 #f1f5f9;
+    }
+    
+    #searchResults::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    #searchResults::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 3px;
+    }
+    
+    #searchResults::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+    }
+    
+    #searchResults::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+    
+    /* Smooth transitions for all sections */
+    [data-search-terms] {
+        transition: all 0.3s ease;
     }
     </style>
 </div>

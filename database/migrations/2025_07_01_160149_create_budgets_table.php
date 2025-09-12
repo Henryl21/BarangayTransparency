@@ -16,7 +16,11 @@ return new class extends Migration
             $table->string('title');
             $table->decimal('amount', 12, 2);
             $table->enum('type', ['income', 'expense']);
-            $table->string('receipt')->nullable(); // Add this to store uploaded receipt file name
+            $table->string('category')->nullable();
+            $table->date('date')->nullable();
+            $table->text('description')->nullable();
+            $table->string('receipt')->nullable(); // Store receipt file path
+            $table->string('receipt_path')->nullable(); // Alternative receipt path field
             $table->timestamps();
         });
     }

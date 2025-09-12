@@ -97,49 +97,54 @@
                     {{ $exp->date ? \Carbon\Carbon::parse($exp->date)->format('M d, Y') : ($exp->created_at ? $exp->created_at->format('M d, Y') : 'N/A') }}
                 </div>
                 
-                <!-- Receipt Preview & Action -->
-                <div class="col-span-1 flex items-center">
-                    @if($exp->receipt || $exp->receipt_path)
-                        @php
-                            $receiptPath = $exp->receipt ?? $exp->receipt_path;
-                            $receiptUrl = asset('storage/' . $receiptPath);
-                            $isImage = in_array(strtolower(pathinfo($receiptPath, PATHINFO_EXTENSION)), ['jpg', 'jpeg', 'png', 'gif']);
-                        @endphp
-                        
-                        <div class="flex flex-col items-center gap-1">
-                            <!-- Receipt Thumbnail (for images only) -->
-                            @if($isImage)
-                                <div class="w-12 h-12 rounded-lg overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-                                     onclick="viewReceiptModal('{{ $receiptUrl }}', '{{ $exp->title }}', {{ $exp->id }})">
-                                    <img src="{{ $receiptUrl }}" 
-                                         alt="Receipt thumbnail" 
-                                         class="w-full h-full object-cover hover:scale-110 transition-transform duration-200"
-                                         loading="lazy">
-                                </div>
-                            @else
-                                <div class="w-12 h-12 rounded-lg border border-gray-200 bg-red-50 flex items-center justify-center cursor-pointer hover:shadow-md transition-shadow"
-                                     onclick="viewReceiptModal('{{ $receiptUrl }}', '{{ $exp->title }}', {{ $exp->id }})">
-                                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                                    </svg>
-                                </div>
-                            @endif
-                            
-                            <!-- View Button -->
-                            <button onclick="window.open('{{ route('admin.expenditure.showReceipt', $exp->id) }}', '_blank')"
-                                    class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                                </svg>
-                                VIEW
-                            </button>
-                        </div>
-                    @else
-                        <span class="bg-gray-300 text-gray-500 px-3 py-1 rounded-lg text-xs font-medium cursor-not-allowed">
-                            No Receipt
-                        </span>
-                    @endif
+               <!-- Receipt Preview & Action -->
+<div class="col-span-1 flex items-center">
+    @if($exp->hasReceipt())
+        @php
+            $receiptUrl = $exp->receipt_url ?? asset('storage/' . ($exp->receipt ?? $exp->receipt_path));
+            $isImage = $exp->isReceiptImage();
+        @endphp
+        
+        <div class="flex flex-col items-center gap-1">
+            <!-- Receipt Thumbnail (for images only) -->
+            @if($isImage)
+                <div class="w-12 h-12 rounded-lg overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                     onclick="viewReceiptModal('{{ $receiptUrl }}', '{{ addslashes($exp->title) }}', {{ $exp->id }})">
+                    <img src="{{ $receiptUrl }}" 
+                         alt="Receipt thumbnail" 
+                         class="w-full h-full object-cover hover:scale-110 transition-transform duration-200"
+                         loading="lazy"
+                         onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500\'>Error</div>'">
                 </div>
+            @else
+                <div class="w-12 h-12 rounded-lg border border-gray-200 bg-red-50 flex items-center justify-center cursor-pointer hover:shadow-md transition-shadow"
+                     onclick="window.open('{{ route('admin.expenditure.showReceipt', $exp->id) }}', '_blank')">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+            @endif
+            
+            <!-- View Button -->
+            <button onclick="window.open('{{ route('admin.expenditure.showReceipt', $exp->id) }}', '_blank')"
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors duration-200 flex items-center gap-1">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                </svg>
+                VIEW
+            </button>
+        </div>
+    @else
+        <div class="flex flex-col items-center">
+            <div class="w-12 h-12 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+            <span class="text-xs text-gray-500 mt-1">No Receipt</span>
+        </div>
+    @endif
+</div>
 
                 <!-- Actions -->
                 <div class="col-span-2 flex items-center gap-2">

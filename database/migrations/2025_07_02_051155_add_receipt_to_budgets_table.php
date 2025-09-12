@@ -11,13 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('expenditures', function (Blueprint $table) {
+        Schema::create('budgets', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('category');
-            $table->decimal('amount', 10, 2);
-            $table->date('date');
-            $table->string('receipt')->nullable();
+            $table->decimal('amount', 12, 2);
+            $table->enum('type', ['income', 'expense']);
+            $table->string('category')->nullable();
+            $table->date('date')->nullable();
+            $table->text('description')->nullable();
+            $table->string('receipt')->nullable(); // Store receipt file path
+            $table->string('receipt_path')->nullable(); // Alternative receipt path field
             $table->timestamps();
         });
     }
@@ -27,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('expenditures');
+        Schema::dropIfExists('budgets');
     }
 };

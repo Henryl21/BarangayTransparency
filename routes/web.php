@@ -31,8 +31,8 @@ Route::prefix('user')->name('user.')->group(function () {
 
     // Dashboard
     Route::get('/dashboard', [UserDashboardController::class, 'index'])
-        ->middleware(['auth'])
-        ->name('dashboard');
+    ->middleware('auth:user') // 👈 must use user guard
+    ->name('dashboard');
 
     // User-specific routes (requires login)
     Route::middleware('auth')->group(function () {
@@ -40,18 +40,7 @@ Route::prefix('user')->name('user.')->group(function () {
     });
 });
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN ROUTES
-|--------------------------------------------------------------------------
-*/
-Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])
-        ->name('dashboard');
 
-    Route::get('/receipt/{expenditure}', [ExpenditureController::class, 'viewReceipt'])
-        ->name('viewReceipt');
-});
 
 /*
 |--------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\User\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -10,27 +10,29 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('auth.login');
+        return view('auth.login'); // your login blade
     }
 
     public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
+{
+    $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
-        }
-
-        return back()->with('error', 'Invalid credentials.');
+    if (Auth::guard('user')->attempt($credentials, $request->filled('remember'))) {
+        $request->session()->regenerate();
+        return redirect()->intended(route('user.dashboard')); // 👈 fixed
     }
 
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ])->onlyInput('email');
+}
 
-        return redirect('/login');
-    }
+public function logout(Request $request)
+{
+    Auth::guard('user')->logout(); // 👈 logout using user guard
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('user.login');
+}
 }

@@ -40,21 +40,19 @@
                 <div class="flex flex-col lg:flex-row justify-between items-start gap-8">
                     <!-- Left Side: Navigation -->
                     <div class="lg:flex-1">
-                        @if (Route::has('login'))
-                            <div class="flex flex-col sm:flex-row gap-4">
-                                @guest
-                                    <!-- Show Login and Register for guests only -->
-                                    <a href="{{ route('login') }}" class="bg-white/20 backdrop-blur-sm border border-white/30 text-white px-6 py-3 rounded-lg hover:bg-white/30 transition-all duration-300 font-semibold text-center">
-                                        Log in
-                                    </a>
-                                    @if (Route::has('register'))
-                                        <a href="{{ route('register') }}" class="bg-accent-gold/90 border border-accent-gold text-white px-6 py-3 rounded-lg hover:bg-accent-gold transition-all duration-300 font-semibold text-center">
-                                            Register
-                                        </a>
-                                    @endif
-                                @endguest
-                            </div>
-                        @endif
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <!-- Login Button -->
+                            <a href="/user/login" 
+                               class="bg-white/20 backdrop-blur-sm border border-white/30 text-white px-6 py-3 rounded-lg hover:bg-white/30 transition-all duration-300 font-semibold text-center">
+                                Log in
+                            </a>
+
+                            <!-- Register Button -->
+                            <a href="/user/register" 
+                               class="bg-accent-gold/90 border border-accent-gold text-white px-6 py-3 rounded-lg hover:bg-accent-gold transition-all duration-300 font-semibold text-center">
+                                Register
+                            </a>
+                        </div>
                     </div>
 
                     <!-- Right Side: Hero Content -->

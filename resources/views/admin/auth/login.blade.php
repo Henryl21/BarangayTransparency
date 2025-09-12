@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Login</title>
+    <title>Admin Login - Madridejos Barangay System</title>
     <style>
         * {
             margin: 0;
@@ -16,9 +16,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             position: relative;
             overflow: hidden;
+            padding: 20px 0;
         }
 
         body::before {
@@ -48,13 +49,13 @@
                 0 20px 40px rgba(0, 0, 0, 0.3),
                 0 0 0 1px rgba(255, 255, 255, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            width: 400px;
+            width: 450px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .login-box h2 {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 10px;
             color: #ffffff;
             font-size: 28px;
             font-weight: 300;
@@ -62,9 +63,27 @@
             text-transform: uppercase;
         }
 
+        .login-subtitle {
+            text-align: center;
+            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
         .input-group {
             position: relative;
             margin-bottom: 30px;
+        }
+
+        .label {
+            display: block;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-align: left;
         }
 
         .input-group input {
@@ -79,11 +98,49 @@
             backdrop-filter: blur(5px);
         }
 
+        .input-group select {
+            width: 100%;
+            padding: 18px 20px 18px 50px;
+            padding-right: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .input-group select option {
+            background: #2a4365;
+            color: white;
+            padding: 10px;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper::after {
+            content: "▼";
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+            font-size: 12px;
+            z-index: 1;
+        }
+
         .input-group input::placeholder {
             color: rgba(255, 255, 255, 0.6);
         }
 
-        .input-group input:focus {
+        .input-group input:focus,
+        .input-group select:focus {
             outline: none;
             border-color: rgba(255, 255, 255, 0.4);
             background: rgba(255, 255, 255, 0.15);
@@ -97,6 +154,41 @@
             transform: translateY(-50%);
             color: rgba(255, 255, 255, 0.6);
             font-size: 18px;
+            z-index: 1;
+        }
+
+        .password-requirements {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .password-requirements h4 {
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-size: 13px;
+        }
+
+        .password-requirements ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .password-requirements li {
+            margin-bottom: 3px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .password-requirements li:before {
+            content: "•";
+            color: rgba(255, 255, 255, 0.6);
+            position: absolute;
+            left: 0;
         }
 
         .login-btn {
@@ -168,9 +260,6 @@
             margin-top: 30px;
             padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .register-link {
             color: rgba(255, 255, 255, 0.7);
             font-size: 14px;
         }
@@ -195,6 +284,10 @@
             content: "🔒";
         }
 
+        .barangay-icon::before {
+            content: "🏢";
+        }
+
         /* Responsive design */
         @media (max-width: 480px) {
             .login-box {
@@ -212,6 +305,7 @@
     <div class="login-container">
         <div class="login-box">
             <h2>Admin Login</h2>
+            <div class="login-subtitle">Barangay Ebudget Transparency System</div>
 
             {{-- Show validation errors --}}
             @if ($errors->any())
@@ -229,12 +323,36 @@
                 </div>
             @endif
 
+            {{-- Show session success --}}
+            @if (session('success'))
+                <div class="success-message">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            
+
             <form method="POST" action="{{ route('admin.login') }}">
                 @csrf
                 
                 <div class="input-group">
                     <div class="input-icon user-icon"></div>
-                    <input type="email" name="email" placeholder="Username" required>
+                    <input type="email" name="email" placeholder="Email Address" value="{{ old('email') }}" required>
+                </div>
+
+                <div class="input-group">
+                    <label class="label">Barangay Role</label>
+                    <div class="select-wrapper">
+                        <div class="input-icon barangay-icon"></div>
+                        <select name="barangay_role" required>
+                            <option value="">Select Your Barangay Role</option>
+                            @foreach($barangays as $key => $name)
+                                <option value="{{ $key }}" {{ old('barangay_role') == $key ? 'selected' : '' }}>
+                                    {{ $name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
                 <div class="input-group">
