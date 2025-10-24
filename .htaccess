@@ -3,5 +3,14 @@
 
     # Redirect all requests to the public folder
     RewriteCond %{REQUEST_URI} !^/public/
-    RewriteRule ^(.*)$ public/$1 [L]
+    # Force Apache to serve everything from the public directory
+    RewriteEngine On
+
+    # Skip if the file or directory actually exists
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Rewrite all other requests to the public directory
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
+
 </IfModule>
