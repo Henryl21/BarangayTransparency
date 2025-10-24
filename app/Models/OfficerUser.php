@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,7 +22,11 @@ class OfficerUser extends Authenticatable
         'remember_token',
     ];
 
-    // Relationship: link to officer profile
+
+    public function getPasswordResetTable()
+    {
+        return 'officer_password_resets';
+    }
     public function officerProfile()
     {
         return $this->hasOne(Officer::class, 'email', 'email');

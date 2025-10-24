@@ -4,14 +4,16 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Feedback;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Feedback;
 
 class FeedbackController extends Controller
 {
     public function index()
     {
-        $feedbacks = Feedback::where('user_id', Auth::id())->latest()->get();
+        $feedbacks = Feedback::where('user_id', Auth::id())
+            ->latest()
+            ->paginate(10); // paginate if you want pages (optional)
         return view('user.feedback.index', compact('feedbacks'));
     }
 
@@ -22,24 +24,24 @@ class FeedbackController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'message' => 'required|string|max:1000',
-        ]);
+        $request->validate(['message' => 'required|string|max:1000']);
 
         Feedback::create([
             'user_id' => Auth::id(),
             'message' => $request->message,
         ]);
 
-        return redirect()->route('feedback.index')->with('success', 'Feedback submitted!');
+        return redirect()->route('user.feedback.index')->with('success', 'Feedback submitted successfully!');
     }
 
     public function destroy($id)
     {
-        $feedback = Feedback::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        $feedback = Feedback::where('id', $id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
         $feedback->delete();
 
-        return redirect()->route('feedback.index')
-            ->with('success', 'Feedback deleted successfully.');
+        return redirect()->route('user.feedback.index')->with('success', 'Feedback deleted successfully.');
     }
 }

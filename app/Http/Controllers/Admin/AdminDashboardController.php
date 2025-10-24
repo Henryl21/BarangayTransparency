@@ -16,19 +16,30 @@ class AdminDashboardController extends Controller
         $currentAdmin = Auth::guard('admin')->user();
         $barangayRole = $currentAdmin->barangay_role;
 
-        // 💰 Totals (automatically filtered by barangay due to global scope)
-        $totalBudget = Budget::where('type', 'income')->sum('amount'); 
-        $totalSpent = Budget::where('type', 'expense')->sum('amount');
+        // 💰 Totals (filtered by barangay role)
+        $totalBudget = Budget::where('barangay_role', $barangayRole)
+            ->where('type', 'income')
+            ->sum('amount'); 
+
+        $totalSpent = Budget::where('barangay_role', $barangayRole)
+            ->where('type', 'expense')
+            ->sum('amount');
+
         $totalRemaining = $totalBudget - $totalSpent;
 
-        // 📦 All budgets (automatically filtered by barangay)
-        $budgets = Budget::latest()->get();
+        // 📦 All budgets (filtered by barangay role)
+        $budgets = Budget::where('barangay_role', $barangayRole)
+            ->latest()
+            ->get();
 
-        // 💸 Expenditures (automatically filtered by barangay)
-        $expenditures = Budget::where('type', 'expense')->get();
+        // 💸 Expenditures (filtered by barangay role)
+        $expenditures = Budget::where('barangay_role', $barangayRole)
+            ->where('type', 'expense')
+            ->get();
 
-        // 📅 Unique years for filtering (automatically filtered by barangay)
-        $budgetYears = Budget::selectRaw('YEAR(created_at) as year')
+        // 📅 Unique years for filtering (filtered by barangay role)
+        $budgetYears = Budget::where('barangay_role', $barangayRole)
+            ->selectRaw('YEAR(created_at) as year')
             ->distinct()
             ->orderBy('year', 'desc')
             ->pluck('year');
@@ -42,14 +53,13 @@ class AdminDashboardController extends Controller
         if ($expenditures->isNotEmpty()) {
             $grouped = $expenditures->groupBy('category');
             $budgetChart['labels'] = $grouped->keys()->toArray();
-            $budgetChart['data'] = $grouped->map(function ($item) {
-                return $item->sum('amount');
-            })->values()->toArray();
+            $budgetChart['data'] = $grouped->map(fn($item) => $item->sum('amount'))
+                                          ->values()
+                                          ->toArray();
         }
 
-        // 📢 Announcements with Search + Filters
-        // Note: If announcements also need barangay filtering, you would need to modify the Announcement model similarly
-        $query = Announcement::query();
+        // 📢 Announcements (filtered by barangay role)
+        $query = Announcement::where('barangay_role', $barangayRole);
 
         // 🔍 Search filter
         if ($request->filled('search')) {
@@ -78,7 +88,7 @@ class AdminDashboardController extends Controller
         // ✅ Final announcements query
         $announcements = $query->orderBy('created_at', 'desc')->get();
 
-        // Get barangay information for display
+        // Barangay info for display
         $barangayName = $currentAdmin->barangay_name ?? ucfirst($barangayRole);
 
         // 🔄 Return to dashboard view
@@ -99,11 +109,17 @@ class AdminDashboardController extends Controller
     // Optional AJAX search endpoint
     public function searchAnnouncements(Request $request)
     {
+        $currentAdmin = Auth::guard('admin')->user();
+        $barangayRole = $currentAdmin->barangay_role;
+
         $searchTerm = $request->get('search', '');
 
-        // If announcements need barangay filtering, add it here
-        $announcements = Announcement::where('title', 'LIKE', "%{$searchTerm}%")
-            ->orWhere('content', 'LIKE', "%{$searchTerm}%")
+        // Filter announcements by barangay role
+        $announcements = Announcement::where('barangay_role', $barangayRole)
+            ->where(function ($q) use ($searchTerm) {
+                $q->where('title', 'LIKE', "%{$searchTerm}%")
+                  ->orWhere('content', 'LIKE', "%{$searchTerm}%");
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 

@@ -10,34 +10,71 @@
 </head>
 <body class="bg-gray-50">
     <div class="min-h-screen">
-        <!-- Header Section -->
-        <div class="bg-white shadow-sm border-b border-gray-200 p-6">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <div class="bg-gradient-to-r from-purple-500 to-blue-500 p-3 rounded-xl shadow-lg">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-4">
-                            <h1 class="text-3xl font-bold text-gray-800">Barangay eBudget Transparency</h1>
-                            <p class="text-gray-600 mt-1">Public Budget Information Portal</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Logout Button -->
-                    <div class="flex items-center space-x-4">
-                        <button onclick="confirmLogout()" class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                            </svg>
-                            Logout
-                        </button>
-                    </div>
-                </div>
+<!-- Header Section -->
+<div class="bg-white shadow-sm border-b border-gray-200 p-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+        
+        <!-- Logo + Title -->
+        <div class="flex items-center space-x-4">
+            <div class="bg-gradient-to-r from-purple-500 to-blue-500 p-2 rounded-lg shadow-lg">
+                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M9 19v-6a2 2 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 
+                             012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 
+                             002-2m0 0V5a2 2 0 012-2h2a2 2 0 
+                             012 2v14a2 2 0 01-2 2h-2a2 2 
+                             0 01-2-2z"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">Barangay eBudget Transparency</h1>
+                <p class="text-gray-600 text-sm">Public Budget Information Portal</p>
             </div>
         </div>
+
+        <!-- Profile + Feedback + Logout -->
+        <div class="flex items-center space-x-3">
+            
+            <!-- Profile -->
+            <div class="relative">
+                <img 
+                    src="{{ Auth::user()->profile_photo_url }}" 
+                    alt="{{ Auth::user()->full_name }}" 
+                    class="w-10 h-10 rounded-full border border-gray-300 object-cover shadow-sm"
+                >
+                <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full ring-2 ring-white"></span>
+            </div>
+
+            <!-- Feedback -->
+            <a href="{{ route('user.feedback.index') }}" 
+               class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white 
+                      text-sm font-medium rounded-md shadow-sm hover:shadow-md transition 
+                      focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M8 10h.01M12 10h.01M16 10h.01M21 16c0 1.657-4.03 3-9 3s-9-1.343-9-3 
+                             4.03-3 9-3 9 1.343 9 3zM3 5h18M4 5l1 9h14l1-9"/>
+                </svg>
+                Feedback
+            </a>
+
+            <!-- Logout -->
+            <button onclick="confirmLogout()" 
+                    class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white 
+                           text-sm font-medium rounded-md shadow-sm hover:shadow-md transition 
+                           focus:outline-none focus:ring-2 focus:ring-red-500">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 
+                             01-3 3H6a3 3 0 01-3-3V7a3 3 0 
+                             013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Logout
+            </button>
+        </div>
+    </div>
+</div>
+
 
         <div class="max-w-7xl mx-auto p-6">
             <!-- Budget Summary Cards -->

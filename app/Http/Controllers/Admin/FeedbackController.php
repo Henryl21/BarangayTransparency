@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Feedback;
 
 class FeedbackController extends Controller
@@ -11,8 +10,10 @@ class FeedbackController extends Controller
     // Show all feedback from all users
     public function index()
     {
-        $feedbacks = Feedback::latest()->get();
-        return view('admin.feedback.index', compact('feedbacks'));
+        // Use paginate so $feedback->links() works
+        $feedback = Feedback::with('user')->latest()->paginate(10);
+
+        return view('admin.feedback.index', compact('feedback'));
     }
 
     // Delete any feedback

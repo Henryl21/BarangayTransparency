@@ -12,16 +12,20 @@ class Budget extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title',
-        'amount',
-        'type',
-        'category',
-        'date',
-        'description',
-        'receipt',
-        'receipt_path',
-        'barangay_role',
-    ];
+    'title',
+    'amount',
+    'type',
+    'category',
+    'date',
+    'description',
+    'receipt',
+    'resolution',   // ✅ this must exist
+    'receipt_path',
+    'barangay_role',
+    'officer_id',
+    'status',
+];
+
 
     protected $casts = [
         'amount' => 'decimal:2',

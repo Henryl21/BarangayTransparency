@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class RegisterController extends Controller
@@ -60,7 +60,7 @@ class RegisterController extends Controller
         $admin = Admin::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => $request->password, // Will be automatically hashed by the model
+            'password' => Hash::make($request->password), // Password hashed here
             'barangay_role' => $request->barangay_role,
             'profile_photo' => $profilePhotoPath,
         ]);

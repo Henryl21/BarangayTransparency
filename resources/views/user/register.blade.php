@@ -1,180 +1,316 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Register - Madridejos Barangay System</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
-        body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #2563eb, #1e40af); }
-        .register-container { width: 100%; max-width: 450px; padding: 20px; }
-        .register-box { background: #fff; border-radius: 16px; padding: 40px 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.2); text-align: center; animation: fadeIn 0.8s ease-in-out; }
-        .register-box h2 { margin-bottom: 8px; font-size: 26px; font-weight: 700; color: #1e3a8a; }
-        .register-subtitle { font-size: 14px; color: #64748b; margin-bottom: 25px; }
-        .input-group { display: flex; align-items: center; background: #f1f5f9; margin-bottom: 18px; border-radius: 10px; padding: 10px 12px; }
-        .input-group input, .input-group select { border: none; outline: none; flex: 1; background: transparent; font-size: 15px; color: #1e293b; }
-        .input-icon { width: 20px; height: 20px; margin-right: 10px; background-size: cover; opacity: 0.6; }
-        .user-icon { background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23674caf' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M12 14c-4 0-7 2-7 6v1h14v-1c0-4-3-6-7-6zM12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5z'/%3E%3C/svg%3E"); }
-        .email-icon { background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23674caf' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M4 4h16v16H4z'/%3E%3Cpath d='M22 6l-10 7L2 6'/%3E%3C/svg%3E"); }
-        .lock-icon { background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23674caf' stroke-width='2' viewBox='0 0 24 24'%3E%3Crect x='5' y='11' width='14' height='10' rx='2'/%3E%3Cpath d='M9 11V7a3 3 0 0 1 6 0v4'/%3E%3C/svg%3E"); }
-        .register-btn { width: 100%; padding: 12px; background: #2563eb; color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .register-btn:hover { background: #1e3a8a; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(0,0,0,0.2); }
-        .login-link { margin-top: 20px; font-size: 14px; color: #475569; }
-        .login-link a { color: #2563eb; text-decoration: none; font-weight: 600; transition: color 0.3s; }
-        .login-link a:hover { color: #1e3a8a; }
-        .error-message, .success-message { margin-bottom: 15px; padding: 10px; border-radius: 8px; font-size: 14px; text-align: left; }
-        .error-message { background: #fee2e2; color: #b91c1c; }
-        .success-message { background: #dcfce7; color: #15803d; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 500px) { .register-box { padding: 30px 20px; } }
-        .profile-preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #2563eb; margin: 0 auto 15px; display: block; }
-        #password-strength { text-align: left; font-size: 12px; margin-bottom: 10px; }
-        #password-strength ul { list-style: none; padding-left: 0; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Register - Madridejos Barangay System</title>
+  <style>
+    * {
+      margin: 0; padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      background: #000;
+      color: #fff;
+    }
+
+    /* === Background Slideshow === */
+    .background-slideshow {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      z-index: -3;
+    }
+
+    .background-slideshow img {
+      position: absolute;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      animation: slideShow 72s infinite;
+      transition: opacity 1s ease-in-out;
+    }
+
+    /* Delay each image for smooth fade transitions */
+    .background-slideshow img:nth-child(1) { animation-delay: 0s; }
+    .background-slideshow img:nth-child(2) { animation-delay: 6s; }
+    .background-slideshow img:nth-child(3) { animation-delay: 12s; }
+    .background-slideshow img:nth-child(4) { animation-delay: 18s; }
+    .background-slideshow img:nth-child(5) { animation-delay: 24s; }
+    .background-slideshow img:nth-child(6) { animation-delay: 30s; }
+    .background-slideshow img:nth-child(7) { animation-delay: 36s; }
+    .background-slideshow img:nth-child(8) { animation-delay: 42s; }
+    .background-slideshow img:nth-child(9) { animation-delay: 48s; }
+    .background-slideshow img:nth-child(10){ animation-delay: 54s; }
+    .background-slideshow img:nth-child(11){ animation-delay: 60s; }
+    .background-slideshow img:nth-child(12){ animation-delay: 66s; }
+
+    @keyframes slideShow {
+      0% { opacity: 0; transform: scale(1); }
+      5% { opacity: 1; transform: scale(1.02); }
+      25% { opacity: 1; transform: scale(1.04); }
+      30% { opacity: 0; transform: scale(1.06); }
+      100% { opacity: 0; }
+    }
+
+    /* === Overlay === */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: -2;
+      backdrop-filter: blur(6px);
+    }
+
+    /* === Register Container === */
+    .register-container {
+      width: 100%;
+      max-width: 480px;
+      padding: 25px;
+      margin: 40px 0;
+      z-index: 1;
+    }
+
+    /* === Register Box (Glass Effect + Shadow) === */
+    .register-box {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      padding: 40px 30px;
+      backdrop-filter: blur(15px);
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      text-align: center;
+      animation: floatIn 1s ease forwards;
+      transform: translateY(20px);
+      box-shadow:
+        0 0 20px rgba(255, 255, 255, 0.2),
+        0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    @keyframes floatIn { to { transform: translateY(0); opacity: 1; } }
+
+    .register-box h2 {
+      margin-bottom: 10px;
+      font-size: 26px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+
+    .register-subtitle {
+      font-size: 14px;
+      color: #d1d5db;
+      margin-bottom: 25px;
+    }
+
+    /* === Input Fields === */
+    .input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: hsla(0, 38%, 91%, 0.84);
+      margin-bottom: 18px;
+      border-radius: 12px;
+      padding: 10px 14px;
+      transition: all 0.3s ease;
+      border: 1.5px solid rgba(0, 0, 0, 0.15);
+      box-shadow: 0 2px 8px rgba(126, 213, 181, 0.42);
+    }
+
+    .input-group:hover {
+      border-color: rgba(237, 226, 226, 0.87);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .input-group input,
+    .input-group select {
+      border: none;
+      outline: none;
+      flex: 1;
+      background: transparent;
+      font-size: 15px;
+      color: #2f2c2c;
+    }
+
+    .input-group input::placeholder { color: #1c1717; }
+
+    .input-icon {
+      width: 22px; height: 22px;
+      margin-right: 10px;
+      background-size: cover;
+      opacity: 0.9;
+      filter: brightness(2);
+    }
+
+    .toggle-password {
+      cursor: pointer;
+      position: absolute;
+      right: 12px;
+      font-size: 18px;
+      color: #fff;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+    }
+    .toggle-password:hover { opacity: 1; }
+
+    /* === Button === */
+    .register-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #2563eb, #1e3a8a);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(37,99,235,0.5);
+    }
+    .register-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px rgba(37,99,235,0.8);
+    }
+
+    .login-link { margin-top: 20px; font-size: 14px; color: rgba(255,255,255,0.8); }
+    .login-link a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      text-shadow: 0 0 6px rgba(255,255,255,0.5);
+    }
+    .login-link a:hover { color: #a5b4fc; }
+
+    .profile-preview {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255,255,255,0.6);
+      margin: 0 auto 15px;
+      display: block;
+      box-shadow: 0 0 10px rgba(255,255,255,0.4);
+    }
+
+    @media (max-width: 500px) {
+      .register-box { padding: 30px 20px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="register-container">
-        <div class="register-box">
-            <h2>User Registration</h2>
-            <div class="register-subtitle">Barangay Ebudget Transparency System</div>
+  <!-- Background slideshow -->
+  <div class="background-slideshow">
+    <img src="/storage/images/malbago.jpg" alt="">
+    <img src="/storage/images/poblacion.jpg" alt="">
+    <img src="/storage/images/tabagak.jpg" alt="">
+    <img src="/storage/images/bunakan.jpg" alt="">
+    <img src="/storage/images/kodia.jpg" alt="">
+    <img src="/storage/images/tugas.jpg" alt="">
+    <img src="/storage/images/san-agustin.jpg" alt="">
+    <img src="/storage/images/tarong.jpg" alt="">
+    <img src="/storage/images/pili.jpg" alt="">
+    <img src="/storage/images/mancilang.jpg" alt="">
+    <img src="/storage/images/kaongkod.jpg" alt="">
+    <img src="/storage/images/talangnan.jpg" alt="">
+  </div>
 
-            {{-- Validation Errors --}}
-            @if ($errors->any())
-                <div class="error-message">
-                    @foreach ($errors->all() as $error)
-                        <div>{{ $error }}</div>
-                    @endforeach
-                </div>
-            @endif
+  <div class="overlay"></div>
 
-            {{-- Session Messages --}}
-            @if (session('error'))
-                <div class="error-message">{{ session('error') }}</div>
-            @endif
-            @if (session('success'))
-                <div class="success-message">{{ session('success') }}</div>
-            @endif
+  <div class="register-container">
+    <div class="register-box">
+      <h2>User Registration</h2>
+      <div class="register-subtitle">Barangay eBudget Transparency System</div>
 
-            <form method="POST" action="{{ route('user.register.store') }}" enctype="multipart/form-data">
-                @csrf
+      <form method="POST" action="{{ route('user.register.store') }}" enctype="multipart/form-data">
+        @csrf
+        <img id="preview-image" src="https://ui-avatars.com/api/?name=User" class="profile-preview" alt="Preview">
 
-                <!-- Profile Preview -->
-                <img id="preview-image" src="https://ui-avatars.com/api/?name=User" class="profile-preview" alt="Preview">
-
-                <!-- Full Name -->
-                <div class="input-group">
-                    <div class="input-icon user-icon"></div>
-                    <input type="text" name="full_name" placeholder="Full Name" value="{{ old('full_name') }}" required>
-                </div>
-
-                <!-- Contact Number -->
-                <div class="input-group">
-                    <div class="input-icon user-icon"></div>
-                    <input type="text" name="number" placeholder="Contact Number" value="{{ old('number') }}" required>
-                </div>
-
-                <!-- Age -->
-                <div class="input-group">
-                    <div class="input-icon user-icon"></div>
-                    <input type="number" name="age" placeholder="Age" value="{{ old('age') }}" required>
-                </div>
-
-                <!-- Birthdate -->
-                <div class="input-group">
-                    <div class="input-icon user-icon"></div>
-                    <input type="date" name="birthdate" value="{{ old('birthdate') }}" required>
-                </div>
-
-                <!-- Barangay Selection -->
-                <div class="input-group">
-                    <div class="input-icon user-icon"></div>
-                    <select name="barangay_role" required>
-                        <option value="">-- Select Barangay --</option>
-                        @foreach (\App\Models\User::getBarangays() as $key => $name)
-                            <option value="{{ $key }}" {{ old('barangay_role') == $key ? 'selected' : '' }}>
-                                {{ $name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Profile Photo -->
-                <div class="input-group">
-                    <div class="input-icon user-icon"></div>
-                    <input type="file" name="profile_photo" accept="image/*" onchange="previewFile(event)">
-                </div>
-
-                <!-- Email -->
-                <div class="input-group">
-                    <div class="input-icon email-icon"></div>
-                    <input type="email" name="email" placeholder="Email Address" value="{{ old('email') }}" required>
-                </div>
-
-                <!-- Password -->
-                <div class="input-group">
-                    <div class="input-icon lock-icon"></div>
-                    <input type="password" name="password" id="password" placeholder="Password" required>
-                </div>
-
-                <!-- Password Strength -->
-                <div id="password-strength">
-                    <div>Password must contain:</div>
-                    <ul>
-                        <li id="length" style="color:red;">• At least 8 characters</li>
-                        <li id="uppercase" style="color:red;">• Uppercase letter</li>
-                        <li id="lowercase" style="color:red;">• Lowercase letter</li>
-                        <li id="number" style="color:red;">• Number</li>
-                        <li id="symbol" style="color:red;">• Special character (@$!%*?&)</li>
-                    </ul>
-                </div>
-
-                <!-- Confirm Password -->
-                <div class="input-group">
-                    <div class="input-icon lock-icon"></div>
-                    <input type="password" name="password_confirmation" placeholder="Confirm Password" required>
-                </div>
-
-                <button type="submit" class="register-btn">Register</button>
-            </form>
-
-            <div class="login-link">
-                Already have an account? 
-                <a href="{{ route('user.login') }}">Login here</a>
-            </div>
+        <div class="input-group">
+          <input type="text" name="full_name" placeholder="Full Name" required>
         </div>
+
+        <div class="input-group">
+          <input type="text" name="number" placeholder="Contact Number" required>
+        </div>
+
+        <div class="input-group">
+          <input type="date" id="birthdate" name="birthdate" required>
+        </div>
+
+        <div class="input-group">
+          <input type="number" id="age" name="age" placeholder="Age" readonly required>
+        </div>
+
+        <div class="input-group">
+          <select name="barangay_role" required>
+            <option value="">-- Select Barangay --</option>
+            @foreach (\App\Models\User::getBarangays() as $key => $name)
+              <option value="{{ $key }}">{{ $name }}</option>
+            @endforeach
+          </select>
+        </div>
+
+        <div class="input-group">
+          <input type="file" name="profile_photo" accept="image/*" onchange="previewFile(event)">
+        </div>
+
+        <div class="input-group">
+          <input type="email" name="email" placeholder="Email Address" required>
+        </div>
+
+        <div class="input-group">
+          <input type="password" name="password" id="password" placeholder="Password" required>
+          <span class="toggle-password" onclick="togglePassword('password', this)">👁️</span>
+        </div>
+
+        <div class="input-group">
+          <input type="password" name="password_confirmation" id="password_confirmation" placeholder="Confirm Password" required>
+          <span class="toggle-password" onclick="togglePassword('password_confirmation', this)">👁️</span>
+        </div>
+
+        <button type="submit" class="register-btn">Register</button>
+      </form>
+
+      <div class="login-link">
+        Already have an account? <a href="{{ route('user.login') }}">Login here</a>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // Preview uploaded profile photo
-        function previewFile(event) {
-            const input = event.target;
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('preview-image').src = e.target.result;
-                }
-                reader.readAsDataURL(file);
-            }
-        }
+  <script>
+    document.getElementById('birthdate').addEventListener('change', function () {
+      let b = new Date(this.value), t = new Date();
+      let age = t.getFullYear() - b.getFullYear();
+      let m = t.getMonth() - b.getMonth();
+      if (m < 0 || (m === 0 && t.getDate() < b.getDate())) age--;
+      document.getElementById('age').value = age >= 0 ? age : "";
+    });
 
-        // Password strength indicator
-        const passwordInput = document.getElementById('password');
-        const lengthCheck = document.getElementById('length');
-        const uppercaseCheck = document.getElementById('uppercase');
-        const lowercaseCheck = document.getElementById('lowercase');
-        const numberCheck = document.getElementById('number');
-        const symbolCheck = document.getElementById('symbol');
+    function previewFile(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => document.getElementById('preview-image').src = e.target.result;
+        reader.readAsDataURL(file);
+      }
+    }
 
-        passwordInput.addEventListener('input', () => {
-            const value = passwordInput.value;
-
-            lengthCheck.style.color = value.length >= 8 ? 'green' : 'red';
-            uppercaseCheck.style.color = /[A-Z]/.test(value) ? 'green' : 'red';
-            lowercaseCheck.style.color = /[a-z]/.test(value) ? 'green' : 'red';
-            numberCheck.style.color = /[0-9]/.test(value) ? 'green' : 'red';
-            symbolCheck.style.color = /[@$!%*?&]/.test(value) ? 'green' : 'red';
-        });
-    </script>
+    function togglePassword(id, icon) {
+      const field = document.getElementById(id);
+      if (field.type === "password") {
+        field.type = "text"; icon.textContent = "🙈";
+      } else {
+        field.type = "password"; icon.textContent = "👁️";
+      }
+    }
+  </script>
 </body>
 </html>

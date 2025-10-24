@@ -35,19 +35,15 @@ class Admin extends Authenticatable
     }
 
     /**
-     * Override password hashing to use SHA-256
+     * Automatically hash the password when set
      */
     public function setPasswordAttribute($password)
     {
-        $this->attributes['password'] = hash('sha256', $password);
-    }
-
-    /**
-     * Override password verification for SHA-256
-     */
-    public function checkPassword($password)
-    {
-        return hash('sha256', $password) === $this->password;
+        if (!empty($password) && Hash::needsRehash($password)) {
+            $this->attributes['password'] = Hash::make($password);
+        } else {
+            $this->attributes['password'] = $password;
+        }
     }
 
     /**
@@ -88,7 +84,7 @@ class Admin extends Authenticatable
     public function getProfilePhotoUrlAttribute()
     {
         if ($this->profile_photo) {
-            return asset('storage/' . $this->profile_photo);
+            return asset('storage/admin_profiles/' . $this->profile_photo);
         }
         return asset('images/default-avatar.png');
     }

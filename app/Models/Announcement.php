@@ -9,10 +9,18 @@ class Announcement extends Model
 {
     use HasFactory;
 
-   // app/Models/Announcement.php
-protected $fillable = [
-    'title',
-    'content', // ✅ correct column name from migration
-];
+    protected $fillable = [
+        'title',
+        'content',
+        'barangay_role',
+        'published_at',
+    ];
 
+    // 👇 make sure Laravel knows these are dates
+    protected $casts = [
+        'published_at' => 'datetime',
+        'created_at'   => 'datetime',
+        'updated_at'   => 'datetime',
+    ];
 }
+

@@ -7,18 +7,17 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('officers', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('position');
-            $table->string('email')->unique();
-            $table->string('status')->default('pending'); // pending, approved, declined
-            $table->timestamps();
+        Schema::table('officers', function (Blueprint $table) {
+            // Add a password column
+            $table->string('password')->nullable();  // We can make it nullable for the initial state
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('officers');
+        Schema::table('officers', function (Blueprint $table) {
+            // Drop the password column if rolling back
+            $table->dropColumn('password');
+        });
     }
 };

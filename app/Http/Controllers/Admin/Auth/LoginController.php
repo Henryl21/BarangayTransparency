@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class LoginController extends Controller
@@ -26,7 +27,7 @@ class LoginController extends Controller
     {
         // Get available barangays for validation
         $barangayKeys = array_keys(Admin::getBarangays());
-        
+
         // Validate the request inputs
         $request->validate([
             'email' => 'required|email',
@@ -46,30 +47,28 @@ class LoginController extends Controller
 
         // Find admin by email AND barangay role
         $admin = Admin::where('email', $request->email)
-                     ->where('barangay_role', $request->barangay_role)
-                     ->first();
+            ->where('barangay_role', $request->barangay_role)
+            ->first();
 
-        if ($admin && $admin->checkPassword($request->password)) {
-            // Login the admin manually using the admin guard
+        // Check if admin exists and password is correct
+        if ($admin && Hash::check($request->password, $admin->password)) {
             Auth::guard('admin')->login($admin);
-            
-            // Regenerate session to prevent session fixation
             $request->session()->regenerate();
-            
-            return redirect()->route('admin.dashboard')->with('success', 
-                'Welcome back! You are logged in as admin for ' . $admin->barangay_name . ' Barangay.');
+
+            return redirect()->route('admin.dashboard')->with('success',
+                'Welcome back! You are logged in as admin for ' . $admin->barangay_name . ' Barangay.'
+            );
         }
 
-        // Check if user exists with email but wrong barangay role
+        // Check if email exists but barangay role is wrong
         $adminWithEmail = Admin::where('email', $request->email)->first();
         if ($adminWithEmail && $adminWithEmail->barangay_role !== $request->barangay_role) {
             return back()->with('error', 'Invalid credentials. The email and barangay role combination is incorrect.')
-                        ->withInput($request->only('email', 'barangay_role'));
+                         ->withInput($request->only('email', 'barangay_role'));
         }
 
-        // Return back with a generic error if login fails
         return back()->with('error', 'Invalid credentials. Please check your email, barangay role, and password.')
-                    ->withInput($request->only('email', 'barangay_role'));
+                     ->withInput($request->only('email', 'barangay_role'));
     }
 
     /**
