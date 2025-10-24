@@ -1,6 +1,12 @@
-# Redirect all traffic from the root to the /public folder
-RewriteEngine On
+<IfModule mod_rewrite.c>
+  RewriteEngine On
 
-# Prevent redirect loops
-RewriteCond %{REQUEST_URI} !^/public/
-RewriteRule ^(.*)$ /public/$1 [L,QSA]
+  # 🚫 Block direct access to /public folder and its contents
+  RewriteCond %{THE_REQUEST} "\s/public/([^\s]*)" [NC]
+  RewriteRule ^ - [F,L]
+
+  # ✅ Ensure the request is not already pointing to /public
+  RewriteCond %{REQUEST_URI} !^/public/
+  # Redirect everything else into /public
+  RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
