@@ -1,21 +1,15 @@
 
 <IfModule mod_rewrite.c>
  RewriteEngine On
-
-
-<<<<<<< HEAD
-    # Skip if the file or directory actually exists
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-
-    # Rewrite all other requests to the public directory
     RewriteRule ^(.*)$ public/$1 [L,QSA]
 
 </IfModule>
 
-=======
+
 # Prevent redirect loops
 RewriteCond %{REQUEST_URI} !^/public/
 RewriteRule ^(.*)$ /public/$1 [L,QSA]
 </IfModule>
->>>>>>> cd4c29e904977364e37350a2887d8241750fa4a1
+
