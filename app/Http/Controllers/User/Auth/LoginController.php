@@ -38,7 +38,11 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
+<<<<<<< HEAD
         $barangays = User::getBarangays(); // Only fetching barangay names, minimal data
+=======
+        $barangays = User::getBarangays();
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
         return view('user.login', compact('barangays'));
     }
 
@@ -51,14 +55,21 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
+<<<<<<< HEAD
         // Check if user is temporarily locked out
+=======
+        // Check if locked out
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
         if ($this->isLockedOut($request)) {
             return $this->sendLockoutResponse($request);
         }
 
         $barangayKeys = array_keys(User::getBarangays());
 
+<<<<<<< HEAD
         // Validate login inputs
+=======
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
         $request->validate([
             'email' => 'required|email',
             'password' => ['required', 'string', 'min:8'],
@@ -68,12 +79,18 @@ class LoginController extends Controller
             'barangay_role.in' => 'Please select a valid barangay.',
         ]);
 
+<<<<<<< HEAD
         // Retrieve user with minimal data access
+=======
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
         $user = User::where('email', $request->email)
             ->whereRaw('LOWER(barangay_role) = ?', [strtolower($request->barangay_role)])
             ->first();
 
+<<<<<<< HEAD
         // Handle user not found
+=======
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
         if (!$user) {
             $this->incrementLoginAttempts($request);
             return back()->withErrors([
@@ -81,7 +98,10 @@ class LoginController extends Controller
             ])->withInput($request->only('email', 'barangay_role'));
         }
 
+<<<<<<< HEAD
         // Check password securely
+=======
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
         if (!Hash::check($request->password, $user->password)) {
             $this->incrementLoginAttempts($request);
 
@@ -97,16 +117,26 @@ class LoginController extends Controller
             ])->withInput($request->only('email', 'barangay_role'));
         }
 
+<<<<<<< HEAD
         // Correct password — clear attempts
         $this->clearLoginAttempts($request);
 
         // Auto-rehash old passwords if needed
+=======
+        // Password correct → reset attempt counter
+        $this->clearLoginAttempts($request);
+
+        // Rehash old passwords if necessary
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
         if (Hash::needsRehash($user->password)) {
             $user->password = Hash::make($request->password);
             $user->save();
         }
 
+<<<<<<< HEAD
         // Authenticate user
+=======
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
         Auth::guard('user')->login($user);
         $request->session()->regenerate();
 
@@ -118,10 +148,13 @@ class LoginController extends Controller
 
     /**
      * Logout user.
+<<<<<<< HEAD
      *
      * oData Minimization: Clear session data to remove sensitive info.
      * oProtect Personal Data (DPA OF 2012 Compliance):
      * Session and personal data are securely destroyed upon logout.
+=======
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
      */
     public function logout(Request $request)
     {
@@ -136,37 +169,47 @@ class LoginController extends Controller
     // == CUSTOM RATE LIMIT (3 attempts then 60s lockout) ==
     // ============================================================
 
+<<<<<<< HEAD
     /**
      * Generate lockout key for user/IP combination.
      *
      * oProtect Personal Data: Avoid storing sensitive info in cache keys.
      */
+=======
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
     protected function lockoutKey(Request $request): string
     {
         return 'login_lockout_' . sha1($request->ip() . '|' . strtolower($request->input('email')));
     }
 
+<<<<<<< HEAD
     /**
      * Generate login attempt key.
      *
      * oData Minimization: Use hashed identifiers to prevent data exposure.
      */
+=======
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
     protected function attemptKey(Request $request): string
     {
         return 'login_attempts_' . sha1($request->ip() . '|' . strtolower($request->input('email')));
     }
 
+<<<<<<< HEAD
     /**
      * Increment failed login attempts.
      *
      * oProtect Personal Data: Do not log sensitive credentials.
      */
+=======
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
     protected function incrementLoginAttempts(Request $request): void
     {
         $attemptKey = $this->attemptKey($request);
         $lockoutKey = $this->lockoutKey($request);
 
         $attempts = Cache::get($attemptKey, 0) + 1;
+<<<<<<< HEAD
         Cache::put($attemptKey, $attempts, 60); // reset after 60 seconds
 
         if ($attempts >= 3) {
@@ -179,44 +222,69 @@ class LoginController extends Controller
     /**
      * Determine if the user is locked out.
      */
+=======
+        Cache::put($attemptKey, $attempts, 60); // attempts reset after 60 seconds
+
+        if ($attempts >= 3) {
+            // store lockout end timestamp (fixed bug)
+            $lockoutEndsAt = now()->addSeconds(60)->timestamp;
+            Cache::put($lockoutKey, $lockoutEndsAt, 60); // lockout lasts 60s
+            Cache::forget($attemptKey); // reset attempts after lockout starts
+        }
+    }
+
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
     protected function isLockedOut(Request $request): bool
     {
         $lockoutTimestamp = Cache::get($this->lockoutKey($request));
         return $lockoutTimestamp && time() < $lockoutTimestamp;
     }
 
+<<<<<<< HEAD
     /**
      * Clear all login attempts.
      *
      * oData Minimization: Remove temporary data after use.
      */
+=======
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
     protected function clearLoginAttempts(Request $request): void
     {
         Cache::forget($this->attemptKey($request));
         Cache::forget($this->lockoutKey($request));
     }
 
+<<<<<<< HEAD
     /**
      * Calculate retries left before lockout.
      */
+=======
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
     protected function retriesLeft(Request $request): int
     {
         $attempts = Cache::get($this->attemptKey($request), 0);
         return max(0, 3 - $attempts);
     }
 
+<<<<<<< HEAD
     /**
      * Send a lockout response with remaining wait time.
      *
      * oProtect Personal Data: Provide user feedback without exposing security logic.
      */
+=======
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
     protected function sendLockoutResponse(Request $request)
     {
         $lockoutTimestamp = Cache::get($this->lockoutKey($request));
         $seconds = $lockoutTimestamp ? $lockoutTimestamp - time() : 60;
 
         if ($seconds <= 0 || $seconds > 60) {
+<<<<<<< HEAD
             $seconds = 60; // ensure safe countdown
+=======
+            $seconds = 60; // ensure valid countdown
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
         }
 
         throw ValidationException::withMessages([

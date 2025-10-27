@@ -78,6 +78,7 @@ class OfficerAuthController extends Controller
     }
 
     /**
+<<<<<<< HEAD
      * ✅ Show the registration page
      */
     public function showRegister()
@@ -110,6 +111,8 @@ class OfficerAuthController extends Controller
     }
 
     /**
+=======
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
      * Handle officer logout with full session termination
      */
     public function logout(Request $request)
@@ -122,5 +125,33 @@ class OfficerAuthController extends Controller
 
         return redirect()->route('officer.login')
             ->with('status', 'You have been logged out securely.');
+<<<<<<< HEAD
+=======
+    }
+
+    /**
+     * Handle registration
+     */
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:officer_users,email',
+            'password' => 'required|string|min:6|confirmed',
+            'role'     => 'required|string|max:255',
+        ]);
+
+        $officer = OfficerUser::create([
+            'name'     => $request->name,
+            'email'    => strtolower($request->email),
+            'password' => Hash::make($request->password),
+            'role'     => $request->role,
+        ]);
+
+        Auth::guard('officer')->login($officer);
+        $request->session()->regenerate();
+
+        return redirect()->route('officer.dashboard')->with('success', 'Welcome, Officer!');
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
     }
 }

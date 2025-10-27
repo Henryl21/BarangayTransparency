@@ -476,7 +476,10 @@
                     @endforeach
                 </select>
             </div>
+<<<<<<< HEAD
             
+=======
+>>>>>>> 40fb8a3a03692965faebd4a4268afc9270a10aec
 @if ($errors->has('email') && str_contains($errors->first('email'), 'Please try again in'))
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
