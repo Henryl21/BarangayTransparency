@@ -476,6 +476,53 @@
                     @endforeach
                 </select>
             </div>
+            
+@if ($errors->has('email') && str_contains($errors->first('email'), 'Please try again in'))
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const message = {!! json_encode($errors->first('email')) !!};
+            const match = message.match(/(\d+)\s*second/);
+
+            if (match) {
+                let remaining = parseInt(match[1]);
+
+                Swal.fire({
+                    title: "Too Many Login Attempts",
+                    html: `Please try again in <b>${remaining}</b> second(s).`,
+                    icon: "error",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    backdrop: `rgba(0, 0, 0, 0.7)`,
+                    didOpen: () => {
+                        const b = Swal.getHtmlContainer().querySelector("b");
+                        const interval = setInterval(() => {
+                            remaining--;
+                            b.textContent = remaining;
+
+                            if (remaining <= 0) {
+                                clearInterval(interval);
+                                Swal.update({
+                                    title: "You Can Try Again",
+                                    html: "The lockout period has ended. You can now log in.",
+                                    icon: "success",
+                                    showConfirmButton: false
+                                });
+
+                                setTimeout(() => {
+                                    Swal.close();
+                                    location.reload();
+                                }, 1500);
+                            }
+                        }, 1000);
+                    }
+                });
+            }
+        });
+    </script>
+@endif
+
 
             <!-- Image Preview -->
             <div id="barangayPreviewContainer">
@@ -489,10 +536,29 @@
             <button type="submit" class="login-btn">Login</button>
         </form>
 
-        <div class="register-link">
-            Don't have an account?
-            <a href="{{ route('user.register') }}">Register here</a>
-        </div>
+<!-- Terms & Privacy Notice -->
+<div class="mt-4 text-center text-xs text-gray-300">
+    Before creating an account, please review our
+    <a href="#" id="openTerms" class="text-blue-400 hover:text-blue-500 hover:underline font-semibold transition">
+        Terms & Conditions
+    </a>
+    and
+    <a href="#" id="openPrivacy" class="text-blue-400 hover:text-blue-500 hover:underline font-semibold transition">
+        Privacy Policy
+    </a>.
+</div>
+
+<!-- Disabled Register Link -->
+<div class="mt-6 text-center">
+    <a href="{{ route('user.register') }}" 
+       id="registerLink"
+       class="text-gray-400 pointer-events-none cursor-not-allowed text-sm">
+       Create an account
+    </a>
+</div>
+
+
+        
     </div>
 </div>
 
@@ -553,6 +619,158 @@ barangaySelect.addEventListener("change", () => {
         barangayImage.src = "";
     }
 });
+</script>
+<!-- Load/ensure SweetAlert2 and Terms logic (paste before </body>) -->
+<script>
+(function () {
+  // Dynamically load SweetAlert2 if not present
+  function loadSwalIfNeeded(cb) {
+    if (window.Swal) return cb();
+    var s = document.createElement('script');
+    s.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+    s.onload = cb;
+    s.onerror = function () {
+      console.error("Failed to load SweetAlert2. Terms modal won't open.");
+      cb(new Error("swal-load-failed"));
+    };
+    document.head.appendChild(s);
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // elements
+    const openTerms = document.getElementById('openTerms');
+    const openPrivacy = document.getElementById('openPrivacy');
+    const registerLink = document.getElementById('registerLink');
+
+    if (!registerLink) {
+      console.error("registerLink not found. Make sure <a id='registerLink' href='...'> exists.");
+      return;
+    }
+
+    // Save real href then remove it to block navigation until agreement
+    const realHref = registerLink.getAttribute('href') || null;
+    if (realHref) {
+      registerLink.setAttribute('data-real-href', realHref);
+      registerLink.removeAttribute('href'); // disable navigation
+    }
+
+    // set aria attributes & classes for disabled state
+    function setDisabledVisual() {
+      registerLink.classList.add('text-gray-400', 'pointer-events-none', 'cursor-not-allowed');
+      registerLink.classList.remove('text-yellow-300', 'hover:underline', 'cursor-pointer');
+      registerLink.setAttribute('aria-disabled', 'true');
+    }
+    function setEnabledVisual() {
+      registerLink.classList.remove('text-gray-400', 'pointer-events-none', 'cursor-not-allowed');
+      registerLink.classList.add('text-yellow-300', 'hover:underline', 'cursor-pointer');
+      registerLink.setAttribute('aria-disabled', 'false');
+    }
+
+    setDisabledVisual();
+
+    // Prevent accidental activation via keyboard/focus — capture clicks
+    registerLink.addEventListener('click', function (e) {
+      // If it has no href (not yet agreed), block
+      if (!registerLink.getAttribute('data-agreed') || registerLink.getAttribute('data-agreed') !== 'true') {
+        e.preventDefault();
+        e.stopPropagation();
+        // Optionally nudge user to open the terms modal
+        // small toast if Swal available, otherwise alert
+        if (window.Swal) {
+          Swal.fire({ icon: 'info', text: 'Please read and agree to the Terms & Privacy Policy before creating an account.' });
+        } else {
+          alert('Please read and agree to the Terms & Privacy Policy before creating an account.');
+        }
+      } else {
+        // Agreed — allow normal navigation (if href restored below it will navigate)
+      }
+    }, { passive: false });
+
+    // Function to enable register link (called after confirmation)
+    function enableRegister() {
+      const stored = registerLink.getAttribute('data-real-href');
+      if (stored) registerLink.setAttribute('href', stored);
+      registerLink.setAttribute('data-agreed', 'true');
+      setEnabledVisual();
+    }
+
+    // Function to show SweetAlert modal and require checkbox
+    function showTermsModal() {
+      loadSwalIfNeeded(function (err) {
+        if (err) {
+          // fallback: native confirm with checkbox-like behavior
+          const ok = confirm("You must agree to the Terms & Privacy Policy to register. Press OK to agree.");
+          if (ok) enableRegister();
+          return;
+        }
+
+        Swal.fire({
+          title: 'Barangay eBudget System — Terms & Privacy Policy',
+          width: 650,
+          html: `
+            <div style="text-align:left; font-size:13px; line-height:1.35; color:#222">
+              <p><strong>Barangay eBudget Transparency System</strong> follows RA 10173 (Data Privacy Act of 2012). Your personal data (name, email, barangay) is collected only for authentication and transparency purposes.</p>
+              <ul style="margin-left:16px">
+                <li>Only necessary data are collected and stored.</li>
+                <li>Data access is limited to authorized roles (Admin/Officer/Resident).</li>
+                <li>Records are protected and may be purged when no longer needed.</li>
+                <li>Users may request correction or deletion of their data.</li>
+              </ul>
+              <div style="margin-top:12px; display:flex; align-items:center">
+                <input id="swalAgreeCheckbox" type="checkbox" style="margin-right:8px">
+                <label for="swalAgreeCheckbox">I have read and agree to the Terms & Privacy Policy.</label>
+              </div>
+            </div>
+          `,
+          icon: 'info',
+          focusConfirm: false,
+          confirmButtonText: 'I Agree',
+          confirmButtonColor: '#2563eb',
+          showCancelButton: true,
+          cancelButtonText: 'Cancel',
+          preConfirm: () => {
+            const cb = Swal.getPopup().querySelector('#swalAgreeCheckbox');
+            if (!cb || !cb.checked) {
+              Swal.showValidationMessage('You must check the box to agree before proceeding.');
+              return false;
+            }
+            return true;
+          }
+        }).then((res) => {
+          if (res.isConfirmed) {
+            enableRegister();
+            // optional success small toast
+            Swal.fire({ icon: 'success', title: 'Agreed', text: 'You can now create an account.', timer: 1500, showConfirmButton: false });
+          } else {
+            // user cancelled — ensure link remains disabled
+            setDisabledVisual();
+          }
+        });
+      });
+    }
+
+    // Attach event listeners to the open links — only if they exist
+    if (openTerms) openTerms.addEventListener('click', function (e) { e.preventDefault(); showTermsModal(); });
+    if (openPrivacy) openPrivacy.addEventListener('click', function (e) { e.preventDefault(); showTermsModal(); });
+
+    // Safety: in case some other script enabled the link, ensure it stays disabled until agreed
+    // (re-check at intervals for initial page load scripts that might modify the anchor)
+    (function guard() {
+      if (registerLink.getAttribute('data-agreed') !== 'true') {
+        // ensure no href remains
+        if (registerLink.getAttribute('href') && registerLink.getAttribute('data-real-href')) {
+          // remove href to keep disabled
+          registerLink.removeAttribute('href');
+        }
+        setDisabledVisual();
+      }
+      // run again after 300ms twice (covers late DOM changes)
+      setTimeout(() => {
+        if (registerLink.getAttribute('data-agreed') !== 'true') setDisabledVisual();
+      }, 300);
+    })();
+  });
+})();
 </script>
 
 </body>
