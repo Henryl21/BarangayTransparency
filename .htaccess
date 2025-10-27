@@ -1,11 +1,9 @@
+
 <IfModule mod_rewrite.c>
-    RewriteEngine On
+ RewriteEngine On
 
-    # Redirect all requests to the public folder
-    RewriteCond %{REQUEST_URI} !^/public/
-    # Force Apache to serve everything from the public directory
-    RewriteEngine On
 
+<<<<<<< HEAD
     # Skip if the file or directory actually exists
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
@@ -15,3 +13,9 @@
 
 </IfModule>
 
+=======
+# Prevent redirect loops
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ /public/$1 [L,QSA]
+</IfModule>
+>>>>>>> cd4c29e904977364e37350a2887d8241750fa4a1
