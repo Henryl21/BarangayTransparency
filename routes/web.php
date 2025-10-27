@@ -16,20 +16,19 @@ use App\Http\Controllers\Auth\OfficerResetPasswordController;
 use App\Http\Controllers\Auth\UserResetPasswordController;
 use App\Http\Controllers\Auth\UserForgotPasswordController;
 
-
 /*
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 | Welcome Page
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 */
 Route::get('/', function () {
     return view('welcome');
 });
 
 /*
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 | USER ROUTES (Custom Guard: user)
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 */
 Route::prefix('user')->name('user.')->group(function () {
 
@@ -37,26 +36,22 @@ Route::prefix('user')->name('user.')->group(function () {
     Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [UserLoginController::class, 'login'])->name('login.attempt');
     Route::post('/logout', [UserLoginController::class, 'logout'])->name('logout');
-    //FORGOT PASS AND RESET PASS
-Route::get('forgot-password', [UserForgotPasswordController::class, 'showForgotPasswordForm'])
-    ->name('forgot.password');  
 
-Route::post('forgot-password', [UserForgotPasswordController::class, 'sendResetLink'])
-    ->name('forgot.password.send');  
-
-Route::get('reset-password', [UserForgotPasswordController::class, 'showResetForm'])
-    ->name('reset.password.form');
-
-Route::post('reset-password', [UserForgotPasswordController::class, 'resetPassword'])
-    ->name('reset.password.submit');
-
-
+    // Forgot & Reset Password
+    Route::get('forgot-password', [UserForgotPasswordController::class, 'showForgotPasswordForm'])
+        ->name('forgot.password');
+    Route::post('forgot-password', [UserForgotPasswordController::class, 'sendResetLink'])
+        ->name('forgot.password.send');
+    Route::get('reset-password', [UserForgotPasswordController::class, 'showResetForm'])
+        ->name('reset.password.form');
+    Route::post('reset-password', [UserForgotPasswordController::class, 'resetPassword'])
+        ->name('reset.password.submit');
 
     // Registration
     Route::get('/register', [UserRegisterController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [UserRegisterController::class, 'register'])->name('register.store');
 
-    // Dashboard (authenticated)
+    // Dashboard
     Route::get('/dashboard', [UserDashboardController::class, 'index'])
         ->middleware('auth:user')
         ->name('dashboard');
@@ -81,9 +76,9 @@ Route::post('reset-password', [UserForgotPasswordController::class, 'resetPasswo
 });
 
 /*
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 | DEFAULT LARAVEL BREEZE ROUTES (auth:web)
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -92,41 +87,42 @@ Route::middleware('auth')->group(function () {
 });
 
 /*
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 | ADMIN FORGOT / RESET PASSWORD ROUTES
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 */
 Route::prefix('admin')->name('admin.')->group(function () {
-    // Forgot password: show form
     Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotPasswordForm'])->name('forgot.password');
-
-    // Forgot password: send reset link email
     Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('forgot.password.send');
-
-    // Reset password: show reset form with token and email query params
     Route::get('/reset-password', [ResetPasswordController::class, 'showResetPasswordForm'])->name('reset.password');
-
-    // Reset password: handle password update
     Route::post('/reset-password', [ResetPasswordController::class, 'resetPassword'])->name('reset.password.update');
 });
 
 /*
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 | OFFICER FORGOT / RESET PASSWORD ROUTES
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 */
 Route::prefix('officer')->name('officer.')->group(function () {
-
-          Route::get('/forgot-password', [OfficerForgotPasswordController::class, 'showForgotPasswordForm'])->name('forgot.password');
-          Route::post('/forgot-password', [OfficerForgotPasswordController::class, 'sendResetLink'])->name('forgot.password.send');
-         Route::get('/reset-password/{token}', [OfficerForgotPasswordController::class, 'showResetForm'])->name('reset.password');
-         Route::post('/reset-password', [OfficerForgotPasswordController::class, 'resetPassword'])->name('reset.password.submit');
+    Route::get('/forgot-password', [OfficerForgotPasswordController::class, 'showForgotPasswordForm'])->name('forgot.password');
+    Route::post('/forgot-password', [OfficerForgotPasswordController::class, 'sendResetLink'])->name('forgot.password.send');
+    Route::get('/reset-password/{token}', [OfficerForgotPasswordController::class, 'showResetForm'])->name('reset.password');
+    Route::post('/reset-password', [OfficerForgotPasswordController::class, 'resetPassword'])->name('reset.password.submit');
 });
 
 /*
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
+| CAPTCHA REFRESH ROUTE
+|--------------------------------------------------------------------------
+*/
+Route::get('/reload-captcha', function () {
+    return response()->json(['captcha' => captcha_img('flat')]);
+});
+
+/*
+|--------------------------------------------------------------------------
 | EXTRA ROUTES
-|----------------------------------------------------------------------
+|--------------------------------------------------------------------------
 */
 require __DIR__ . '/auth.php';
 require __DIR__ . '/admin.php';

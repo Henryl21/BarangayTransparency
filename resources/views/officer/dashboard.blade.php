@@ -5,11 +5,22 @@
     <div class="max-w-4xl mx-auto">
 
         <!-- Header -->
-        <div class="bg-white shadow-md rounded-xl p-6 mb-6">
-            <h1 class="text-2xl font-bold text-gray-700">Officer Dashboard</h1>
-            <p class="text-gray-500">
-                Welcome, {{ Auth::guard('officer')->user()->name }}
-            </p>
+        <div class="bg-white shadow-md rounded-xl p-6 mb-6 flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-700">Officer Dashboard</h1>
+                <p class="text-gray-500">
+                    Welcome, {{ Auth::guard('officer')->user()->name }}
+                </p>
+            </div>
+
+            <!-- Logout Button -->
+            <form action="{{ route('officer.logout') }}" method="POST">
+                @csrf
+                <button type="submit"
+                    class="bg-red-600 text-white px-4 py-2 rounded-lg shadow hover:bg-red-700 transition">
+                    Logout
+                </button>
+            </form>
         </div>
 
         <!-- Approval Form -->

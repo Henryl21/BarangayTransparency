@@ -476,6 +476,52 @@
                     @endforeach
                 </select>
             </div>
+@if ($errors->has('email') && str_contains($errors->first('email'), 'Please try again in'))
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const message = {!! json_encode($errors->first('email')) !!};
+            const match = message.match(/(\d+)\s*second/);
+
+            if (match) {
+                let remaining = parseInt(match[1]);
+
+                Swal.fire({
+                    title: "Too Many Login Attempts",
+                    html: `Please try again in <b>${remaining}</b> second(s).`,
+                    icon: "error",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    backdrop: `rgba(0, 0, 0, 0.7)`,
+                    didOpen: () => {
+                        const b = Swal.getHtmlContainer().querySelector("b");
+                        const interval = setInterval(() => {
+                            remaining--;
+                            b.textContent = remaining;
+
+                            if (remaining <= 0) {
+                                clearInterval(interval);
+                                Swal.update({
+                                    title: "You Can Try Again",
+                                    html: "The lockout period has ended. You can now log in.",
+                                    icon: "success",
+                                    showConfirmButton: false
+                                });
+
+                                setTimeout(() => {
+                                    Swal.close();
+                                    location.reload();
+                                }, 1500);
+                            }
+                        }, 1000);
+                    }
+                });
+            }
+        });
+    </script>
+@endif
+
 
             <!-- Image Preview -->
             <div id="barangayPreviewContainer">
